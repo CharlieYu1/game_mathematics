@@ -1,14 +1,14 @@
 # Analysis of Diamond Stars game from Pokerstars
 
-<img src="diamond-stars.png" width="500" />
+<img src="./diamond-stars.png" width="450" />
 
 Diamond Stars is one of the most popular slots game on Pokerstars. In this notebook, I'll analyse the payout table and attempt to recreate the reel details of Diamond Stars. The RTP as stated is 91.97% plus 1.16% for jackpot.
 
 The following shows the payout tables seen in game.
 
-<img src="payout-1.png" width="500" />
+<img src="./payout-1.png" width="450" />
 
-<img src="payout-2.png" width="500" />
+<img src="./payout-2.png" width="450" />
 
 Let's start with 3 reels. I put a 2x and 3x wild on the first reel, a 4x wild on the second reel, and a 5x reel on the third reel. Then I fill the remaining symbols table with estimation. There are 100 symbols on each reel, which is a common setup.
 
