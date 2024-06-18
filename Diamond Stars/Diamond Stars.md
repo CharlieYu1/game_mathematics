@@ -1,14 +1,14 @@
 # Analysis of Diamond Stars game from Pokerstars
 
-![Diamond Stars](diamond-stars.png)
+<img src="diamond-stars.png" width="500" />
 
 Diamond Stars is one of the most popular slots game on Pokerstars. In this notebook, I'll analyse the payout table and attempt to recreate the reel details of Diamond Stars. The RTP as stated is 91.97% plus 1.16% for jackpot.
 
-## Payout tables in Game
+The following shows the payout tables seen in game.
 
-![payout-1](payout-1.png)
+<img src="payout-1.png" width="500" />
 
-![payout-2](payout-2.png)
+<img src="payout-2.png" width="500" />
 
 Let's start with 3 reels. I put a 2x and 3x wild on the first reel, a 4x wild on the second reel, and a 5x reel on the third reel. Then I fill the remaining symbols table with estimation. There are 100 symbols on each reel, which is a common setup.
 
@@ -100,7 +100,8 @@ def calculate_payout_by_symbol_or_wild(symbol, symbol_payout):
         for reel1_symbol in hits:
             for reel2_symbol in hits:
                 # must not be all wilds
-                if symbol not in (reel0_symbol, reel1_symbol, reel2_symbol):
+                reel_symbols = (reel0_symbol, reel1_symbol, reel2_symbol)
+                if symbol not in reel_symbols:
                     continue
                     
                 current_multiplier = 1
@@ -111,14 +112,13 @@ def calculate_payout_by_symbol_or_wild(symbol, symbol_payout):
                 if reel2_symbol[:4] == 'wild':
                     current_multiplier *= int(reel2_symbol[5])
 
-                # calculate the number of possibilites of hitting this particular combination
-                num_possibilities = reels[0][reel0_symbol] * reels[1][reel1_symbol] * reels[2][reel2_symbol]
+                # calculate the number of possibilites of 
+                # hitting this particular combination
+                num_possibilities = reels[0][reel0_symbol] *\
+                                    reels[1][reel1_symbol] *\
+                                    reels[2][reel2_symbol]
                 payout_multiplier_sum += num_possibilities * current_multiplier
-                
-                # print combination for checking
-#                 if num_possibilities > 0:
-#                     print(reel0_symbol, reel1_symbol, reel2_symbol)
-#                     print(f"{num_possibilities=} {current_multiplier=}")
+
     
     return payout_multiplier_sum * symbol_payout
                    
@@ -155,8 +155,9 @@ def calculate_payout_mixed_logo_or_wild(mixed_logo_payout=4):
         for reel1_symbol in hits:
             for reel2_symbol in hits:
                 # at least two different logos are present
-                if 'logo-red' not in (reel0_symbol, reel1_symbol, reel2_symbol) or \
-                        'logo-blue' not in (reel0_symbol, reel1_symbol, reel2_symbol):
+                reel_symbols = (reel0_symbol, reel1_symbol, reel2_symbol)
+                if 'logo-red' not in reel_symbols or \
+                        'logo-blue' not in reel_symbols:
                     continue
                     
                 current_multiplier = 1
@@ -167,14 +168,13 @@ def calculate_payout_mixed_logo_or_wild(mixed_logo_payout=4):
                 if reel2_symbol[:4] == 'wild':
                     current_multiplier *= int(reel2_symbol[5])
 
-                # calculate the number of possibilites of hitting this particular combination
-                num_possibilities = reels[0][reel0_symbol] * reels[1][reel1_symbol] * reels[2][reel2_symbol]
+                # calculate the number of possibilites of 
+                # hitting this particular combination
+                num_possibilities = reels[0][reel0_symbol] *\
+                                    reels[1][reel1_symbol] *\
+                                    reels[2][reel2_symbol]
                 payout_multiplier_sum += num_possibilities * current_multiplier
-                
-                # print combination for checking
-#                 if num_possibilities > 0:
-#                     print(reel0_symbol, reel1_symbol, reel2_symbol)
-#                     print(f"{num_possibilities=} {current_multiplier=}")
+
     
     return payout_multiplier_sum * mixed_logo_payout    
 ```
@@ -201,9 +201,11 @@ def calculate_payout_mixed_bars_or_wild(mixed_bars_payout=2):
         for reel1_symbol in hits:
             for reel2_symbol in hits:
                 
-                reel_symbols = [reel0_symbol, reel1_symbol, reel2_symbol]
+                reel_symbols = (reel0_symbol, reel1_symbol, reel2_symbol)
                 # at least two different bars are present
-                if ('bar-1' in reel_symbols) + ('bar-2' in reel_symbols) + ('bar-3' in reel_symbols) < 2:
+                if ('bar-1' in reel_symbols) +\
+                   ('bar-2' in reel_symbols) +\
+                   ('bar-3' in reel_symbols) < 2:
                     continue
                     
                 current_multiplier = 1
@@ -214,14 +216,12 @@ def calculate_payout_mixed_bars_or_wild(mixed_bars_payout=2):
                 if reel2_symbol[:4] == 'wild':
                     current_multiplier *= int(reel2_symbol[5])
 
-                # calculate the number of possibilites of hitting this particular combination
-                num_possibilities = reels[0][reel0_symbol] * reels[1][reel1_symbol] * reels[2][reel2_symbol]
+                # calculate the number of possibilites of
+                # hitting this particular combination
+                num_possibilities = reels[0][reel0_symbol] *\
+                                    reels[1][reel1_symbol] *\
+                                    reels[2][reel2_symbol]
                 payout_multiplier_sum += num_possibilities * current_multiplier
-                
-                # print combination for checking
-                # if num_possibilities > 0:
-                #     print(reel0_symbol, reel1_symbol, reel2_symbol)
-                #     print(f"{num_possibilities=} {current_multiplier=}")
     
     return payout_multiplier_sum * mixed_bars_payout   
 ```
@@ -288,12 +288,18 @@ def results_table():
         ["Bar 2", calculate_payout_by_symbol_or_wild('bar-2', 20)],
         ["Bar 1", calculate_payout_by_symbol_or_wild('bar-1', 10)],
         ["Cherry", calculate_payout_by_symbol_or_wild('cherry', 6)],
-        ["Mixed Logos", calculate_payout_mixed_logo_or_wild(mixed_logo_payout=4)],
-        ["Mixed Bars", calculate_payout_mixed_bars_or_wild(mixed_bars_payout=2)],
+        [
+            "Mixed Logos",
+            calculate_payout_mixed_logo_or_wild(mixed_logo_payout=4)
+        ],
+        [
+            "Mixed Bars",
+            calculate_payout_mixed_bars_or_wild(mixed_bars_payout=2)
+        ],
         ["", ""],
         ["RTP", calculate_RTP()]
     ]
-    table = tabulate.tabulate(data, tablefmt='html')
+    table = tabulate.tabulate(data)
     return table
 
 
@@ -301,30 +307,24 @@ def results_table():
 
 
 ```python
-results_table()
+print(results_table())
 ```
 
-
-
-
-<table>
-<tbody>
-<tr><td>Payout Type</td><td>Payout  </td></tr>
-<tr><td>Three Wilds</td><td>30000   </td></tr>
-<tr><td>Red Logo   </td><td>34800   </td></tr>
-<tr><td>Blue Logo  </td><td>40000   </td></tr>
-<tr><td>Bar 3      </td><td>77120   </td></tr>
-<tr><td>Bar 2      </td><td>174400  </td></tr>
-<tr><td>Bar 1      </td><td>234480  </td></tr>
-<tr><td>Cherry     </td><td>635592  </td></tr>
-<tr><td>Mixed Logos</td><td>3120    </td></tr>
-<tr><td>Mixed Bars </td><td>223744  </td></tr>
-<tr><td>           </td><td>        </td></tr>
-<tr><td>RTP        </td><td>1.453256</td></tr>
-</tbody>
-</table>
-
-
+    -----------  --------
+    Payout Type  Payout
+    Three Wilds  30000
+    Red Logo     34800
+    Blue Logo    40000
+    Bar 3        77120
+    Bar 2        174400
+    Bar 1        234480
+    Cherry       635592
+    Mixed Logos  3120
+    Mixed Bars   223744
+    
+    RTP          1.453256
+    -----------  --------
+    
 
 Current the RTP is 145.33%, which is too high. We can see from the table that a large amount of payout comes from cherries. Red Logo, Blue Logo and Bar 3, despite being high value, is only contributing a small amount of payout. Let's revise the reels table to decrease the number of cherries and increase the number of other logos.
 
@@ -385,77 +385,75 @@ def reels_table():
     import tabulate
     data = [
         ["Reel #", 0, 1, 2],
-        ["5x Whild", reels[0]['wild-5'], reels[1]['wild-5'], reels[2]['wild-5']],
-        ["4x Whild", reels[0]['wild-4'], reels[1]['wild-4'], reels[2]['wild-4']],
-        ["3x Whild", reels[0]['wild-3'], reels[1]['wild-3'], reels[2]['wild-3']],
-        ["2x Whild", reels[0]['wild-2'], reels[1]['wild-2'], reels[2]['wild-2']],
-        ["Red Logo", reels[0]['logo-red'], reels[1]['logo-red'], reels[2]['logo-red']],
-        ["Blue Logo", reels[0]['logo-blue'], reels[1]['logo-blue'], reels[2]['logo-blue']],
+        ["5x Wild", reels[0]['wild-5'], reels[1]['wild-5'], reels[2]['wild-5']],
+        ["4x Wild", reels[0]['wild-4'], reels[1]['wild-4'], reels[2]['wild-4']],
+        ["3x Wild", reels[0]['wild-3'], reels[1]['wild-3'], reels[2]['wild-3']],
+        ["2x Wild", reels[0]['wild-2'], reels[1]['wild-2'], reels[2]['wild-2']],
+        [
+            "Red Logo",
+            reels[0]['logo-red'],
+            reels[1]['logo-red'],
+            reels[2]['logo-red']
+        ],
+        [
+            "Blue Logo",
+            reels[0]['logo-blue'],
+            reels[1]['logo-blue'],
+            reels[2]['logo-blue']
+        ],
         ["Bar 3", reels[0]['bar-3'], reels[1]['bar-3'], reels[2]['bar-3']],
         ["Bar 2", reels[0]['bar-2'], reels[1]['bar-2'], reels[2]['bar-2']],
         ["Bar 1", reels[0]['bar-1'], reels[1]['bar-1'], reels[2]['bar-1']],
         ["Cherry",  reels[0]['cherry'], reels[1]['cherry'], reels[2]['cherry']],
         ["Total", 100, 100, 100]
     ]
-    table = tabulate.tabulate(data, tablefmt='html')
+    table = tabulate.tabulate(data)
     return table
 ```
 
 
 ```python
-reels_table()
+print(reels_table())
 ```
 
-
-
-
-<table>
-<tbody>
-<tr><td>Reel #   </td><td style="text-align: right;">  0</td><td style="text-align: right;">  1</td><td style="text-align: right;">  2</td></tr>
-<tr><td>5x Whild </td><td style="text-align: right;">  0</td><td style="text-align: right;">  0</td><td style="text-align: right;">  1</td></tr>
-<tr><td>4x Whild </td><td style="text-align: right;">  0</td><td style="text-align: right;">  1</td><td style="text-align: right;">  0</td></tr>
-<tr><td>3x Whild </td><td style="text-align: right;">  1</td><td style="text-align: right;">  0</td><td style="text-align: right;">  0</td></tr>
-<tr><td>2x Whild </td><td style="text-align: right;">  1</td><td style="text-align: right;">  0</td><td style="text-align: right;">  0</td></tr>
-<tr><td>Red Logo </td><td style="text-align: right;">  8</td><td style="text-align: right;">  8</td><td style="text-align: right;">  8</td></tr>
-<tr><td>Blue Logo</td><td style="text-align: right;"> 13</td><td style="text-align: right;"> 13</td><td style="text-align: right;"> 13</td></tr>
-<tr><td>Bar 3    </td><td style="text-align: right;"> 12</td><td style="text-align: right;"> 12</td><td style="text-align: right;"> 12</td></tr>
-<tr><td>Bar 2    </td><td style="text-align: right;"> 16</td><td style="text-align: right;"> 16</td><td style="text-align: right;"> 16</td></tr>
-<tr><td>Bar 1    </td><td style="text-align: right;"> 22</td><td style="text-align: right;"> 22</td><td style="text-align: right;"> 22</td></tr>
-<tr><td>Cherry   </td><td style="text-align: right;"> 27</td><td style="text-align: right;"> 28</td><td style="text-align: right;"> 28</td></tr>
-<tr><td>Total    </td><td style="text-align: right;">100</td><td style="text-align: right;">100</td><td style="text-align: right;">100</td></tr>
-</tbody>
-</table>
-
-
+    ---------  ---  ---  ---
+    Reel #       0    1    2
+    5x Wild      0    0    1
+    4x Wild      0    1    0
+    3x Wild      1    0    0
+    2x Wild      1    0    0
+    Red Logo     8    8    8
+    Blue Logo   13   13   13
+    Bar 3       12   12   12
+    Bar 2       16   16   16
+    Bar 1       22   22   22
+    Cherry      27   28   28
+    Total      100  100  100
+    ---------  ---  ---  ---
+    
 
 And calculate the RTP table again.
 
 
 ```python
-results_table()
+print(results_table())
 ```
 
-
-
-
-<table>
-<tbody>
-<tr><td>Payout Type</td><td>Payout  </td></tr>
-<tr><td>Three Wilds</td><td>30000   </td></tr>
-<tr><td>Red Logo   </td><td>192800  </td></tr>
-<tr><td>Blue Logo  </td><td>270400  </td></tr>
-<tr><td>Bar 3      </td><td>180960  </td></tr>
-<tr><td>Bar 2      </td><td>174400  </td></tr>
-<tr><td>Bar 1      </td><td>188540  </td></tr>
-<tr><td>Cherry     </td><td>202152  </td></tr>
-<tr><td>Mixed Logos</td><td>37856   </td></tr>
-<tr><td>Mixed Bars </td><td>262304  </td></tr>
-<tr><td>           </td><td>        </td></tr>
-<tr><td>RTP        </td><td>1.539412</td></tr>
-</tbody>
-</table>
-
-
+    -----------  --------
+    Payout Type  Payout
+    Three Wilds  30000
+    Red Logo     192800
+    Blue Logo    270400
+    Bar 3        180960
+    Bar 2        174400
+    Bar 1        188540
+    Cherry       202152
+    Mixed Logos  37856
+    Mixed Bars   262304
+    
+    RTP          1.539412
+    -----------  --------
+    
 
 This time it is even worse. Maybe a roughly equal chance of hitting a symbol on each reel is not a good idea.
 
@@ -509,57 +507,45 @@ for reel in reels:
 
 
 ```python
-reels_table()
+print(reels_table())
 ```
 
-
-
-
-<table>
-<tbody>
-<tr><td>Reel #   </td><td style="text-align: right;">  0</td><td style="text-align: right;">  1</td><td style="text-align: right;">  2</td></tr>
-<tr><td>5x Whild </td><td style="text-align: right;">  0</td><td style="text-align: right;">  0</td><td style="text-align: right;">  1</td></tr>
-<tr><td>4x Whild </td><td style="text-align: right;">  0</td><td style="text-align: right;">  1</td><td style="text-align: right;">  0</td></tr>
-<tr><td>3x Whild </td><td style="text-align: right;">  1</td><td style="text-align: right;">  0</td><td style="text-align: right;">  0</td></tr>
-<tr><td>2x Whild </td><td style="text-align: right;">  1</td><td style="text-align: right;">  0</td><td style="text-align: right;">  0</td></tr>
-<tr><td>Red Logo </td><td style="text-align: right;">  3</td><td style="text-align: right;">  4</td><td style="text-align: right;"> 17</td></tr>
-<tr><td>Blue Logo</td><td style="text-align: right;"> 23</td><td style="text-align: right;">  5</td><td style="text-align: right;">  5</td></tr>
-<tr><td>Bar 3    </td><td style="text-align: right;">  5</td><td style="text-align: right;">  5</td><td style="text-align: right;"> 16</td></tr>
-<tr><td>Bar 2    </td><td style="text-align: right;">  5</td><td style="text-align: right;"> 31</td><td style="text-align: right;">  5</td></tr>
-<tr><td>Bar 1    </td><td style="text-align: right;"> 52</td><td style="text-align: right;">  6</td><td style="text-align: right;">  6</td></tr>
-<tr><td>Cherry   </td><td style="text-align: right;"> 10</td><td style="text-align: right;"> 48</td><td style="text-align: right;"> 50</td></tr>
-<tr><td>Total    </td><td style="text-align: right;">100</td><td style="text-align: right;">100</td><td style="text-align: right;">100</td></tr>
-</tbody>
-</table>
-
-
+    ---------  ---  ---  ---
+    Reel #       0    1    2
+    5x Wild      0    0    1
+    4x Wild      0    1    0
+    3x Wild      1    0    0
+    2x Wild      1    0    0
+    Red Logo     3    4   17
+    Blue Logo   23    5    5
+    Bar 3        5    5   16
+    Bar 2        5   31    5
+    Bar 1       52    6    6
+    Cherry      10   48   50
+    Total      100  100  100
+    ---------  ---  ---  ---
+    
 
 
 ```python
-results_table()
+print(results_table())
 ```
 
-
-
-
-<table>
-<tbody>
-<tr><td>Payout Type</td><td>Payout </td></tr>
-<tr><td>Three Wilds</td><td>30000  </td></tr>
-<tr><td>Red Logo   </td><td>130800 </td></tr>
-<tr><td>Blue Logo  </td><td>121000 </td></tr>
-<tr><td>Bar 3      </td><td>71600  </td></tr>
-<tr><td>Bar 2      </td><td>68000  </td></tr>
-<tr><td>Bar 1      </td><td>61700  </td></tr>
-<tr><td>Cherry     </td><td>256800 </td></tr>
-<tr><td>Mixed Logos</td><td>28212  </td></tr>
-<tr><td>Mixed Bars </td><td>174328 </td></tr>
-<tr><td>           </td><td>       </td></tr>
-<tr><td>RTP        </td><td>0.94244</td></tr>
-</tbody>
-</table>
-
-
+    -----------  -------
+    Payout Type  Payout
+    Three Wilds  30000
+    Red Logo     130800
+    Blue Logo    121000
+    Bar 3        71600
+    Bar 2        68000
+    Bar 1        61700
+    Cherry       256800
+    Mixed Logos  28212
+    Mixed Bars   174328
+    
+    RTP          0.94244
+    -----------  -------
+    
 
 After a lot of tweaking and fine-tuning, I brought the RTP to 94.24%. This is much harder than I expected it to be. But this is an eye-opening exercise. Changing a symbol on the reel to another decreases the payout of one type of combo, but increases the payout of another. It is interesting to play around the reels table while trying to make the overall payout to stay within the budget.
 
